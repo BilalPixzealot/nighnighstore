@@ -26,7 +26,7 @@
   header h1{font-family:var(--serif);font-weight:300;font-size:clamp(34px,5vw,58px);line-height:1.04;margin-top:16px;letter-spacing:-.015em}
   header h1 em{color:var(--brass)}
   header p{color:var(--ink-soft);max-width:56ch;margin:18px auto 0;font-size:16px}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;max-width:920px;margin:0 auto}
   .opt{background:var(--card);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;
     transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s;box-shadow:0 10px 40px -28px rgba(33,29,23,.5)}
   .opt:hover{transform:translateY(-6px);box-shadow:0 30px 60px -34px rgba(33,29,23,.55)}
@@ -55,8 +55,8 @@
     <header>
       <div class="logo">NIGH<span class="d">·</span>NIGH</div>
       <span class="eyebrow">Homepage Redesign · Prototypes</span>
-      <h1>Three directions to <em>choose</em> from.</h1>
-      <p>All three are light, luxury, and award-level — with the same content and the same Shopify foundation. Open each, scroll to feel the motion, and tell us which world feels most like Nigh Nigh.</p>
+      <h1>Two directions to <em>choose</em> from.</h1>
+      <p>Both are light, luxury, and award-level — with the same content and the same Shopify foundation. Open each, scroll to feel the motion, and tell us which world feels most like Nigh Nigh.</p>
     </header>
 
     <div class="grid">
@@ -72,23 +72,12 @@
       </div>
 
       <div class="opt">
-        <div class="thumb"><span class="tag">Option 2</span><img src="opt2-hero.jpg" alt="Option 2 — The Cinematic"></div>
+        <div class="thumb"><span class="tag">Option 2</span><img src="opt3-hero.jpg" alt="Option 2 — The Showcase"></div>
         <div class="body">
-          <div class="n">The Cinematic</div>
-          <h2>Editorial <em>storytelling</em>, scene by scene</h2>
-          <p>A type-behind-subject hero, full-screen statements, and floating detail “pills” — a scroll that unfolds like a film. Bold, modern, and unmistakably ownable.</p>
-          <ul class="feats"><li>Type-behind-subject hero</li><li>Floating glass labels</li><li>Full-screen scenes</li><li>Smooth scroll</li></ul>
-          <a class="open" href="nighnigh-prototype.html">Open Prototype →</a>
-        </div>
-      </div>
-
-      <div class="opt">
-        <div class="thumb"><span class="tag">Option 3</span><img src="opt3-hero.jpg" alt="Option 3 — The Journey"></div>
-        <div class="body">
-          <div class="n">The Journey</div>
-          <h2>One image, <em>morphing</em> by age</h2>
-          <p>A split hero of Infants, Kids &amp; Adults — then a single sticky image that travels and transforms from one age to the next as you scroll, side to side.</p>
-          <ul class="feats"><li>Morphing category scroll</li><li>Left-rail progress</li><li>Lookbook &amp; film</li><li>Smooth scroll</li></ul>
+          <div class="n">The Showcase</div>
+          <h2>Real <em>3D</em> product, spinning by age</h2>
+          <p>A split hero of Infants, Kids &amp; Adults — then a real 3D garment that spins a full 360° as you scroll, changing colourway for each age. Built with WebGL.</p>
+          <ul class="feats"><li>360° 3D product spin</li><li>WebGL · Three.js</li><li>Colourway per age</li><li>Lookbook &amp; film</li></ul>
           <a class="open" href="nighnigh-option3.html">Open Prototype →</a>
         </div>
       </div>
