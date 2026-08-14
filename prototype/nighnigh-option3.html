@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nigh Nigh — Option 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE8DB; --paper-2:#E7DECE; --paper-3:#DFD4C0; --card:#F5F0E7;
+    --ink:#211D17; --ink-2:#3B352C; --ink-soft:#6E655A; --faint:#9A9081;
+    --brass:#96793B; --brass-2:#B79A5A;
+    --line:rgba(33,29,23,.16); --line-2:rgba(33,29,23,.08);
+    --serif:'Fraunces',Georgia,serif; --sans:'Jost',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--paper)}
+  body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:300;line-height:1.6}
+  h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1.02;letter-spacing:-.018em}
+  em{font-style:italic}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;color:var(--brass)}
+  .btn{display:inline-block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
+    padding:15px 34px;border:1px solid var(--ink);color:var(--ink);background:transparent;position:relative;overflow:hidden;transition:.4s}
+  .btn span{position:relative;z-index:2;transition:.4s}
+  .btn::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(101%);transition:.45s cubic-bezier(.7,0,.2,1);z-index:1}
+  .btn:hover::before{transform:translateY(0)} .btn:hover span{color:var(--paper)}
+  .btn-fill{background:var(--ink);color:var(--paper)} .btn-fill::before{background:var(--brass)} .btn-fill:hover span{color:var(--ink)}
+  .btn-light{border-color:var(--paper);color:var(--paper)} .btn-light::before{background:var(--paper)} .btn-light:hover span{color:var(--ink)}
+
+  .cursor{position:fixed;top:0;left:0;width:9px;height:9px;border-radius:50%;background:var(--ink);pointer-events:none;
+    z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;mix-blend-mode:difference}
+  .cursor.big{width:64px;height:64px;background:var(--paper)}
+  .cursor.big.lbl::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);mix-blend-mode:normal}
+  @media (pointer:coarse){.cursor{display:none}}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:24px 46px;transition:.5s;mix-blend-mode:difference;color:#EFE8DB}
+  nav.solid{mix-blend-mode:normal;background:rgba(239,232,219,.86);backdrop-filter:blur(16px);color:var(--ink);padding:15px 46px;border-bottom:1px solid var(--line-2)}
+  nav .links,nav .right{display:flex;gap:26px}
+  nav .right{justify-content:flex-end}
+  nav a.n{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase}
+  nav .logo{font-family:var(--serif);font-size:23px;letter-spacing:.18em;text-align:center}
+  nav .logo .d{color:var(--brass-2)}
+
+  .line{overflow:hidden;display:block}
+  .line .in{display:block;transform:translateY(103%)}
+  .reveal{opacity:0;transform:translateY(26px)}
+
+  /* HERO — 3 category panels side by side */
+  .hero{position:relative;height:100vh;min-height:680px;display:flex;overflow:hidden}
+  .hpanel{position:relative;flex:1;overflow:hidden;transition:flex .7s cubic-bezier(.5,0,.1,1);cursor:pointer}
+  .hpanel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+  .hpanel::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(25,20,14,.6),rgba(25,20,14,.05) 45%,rgba(25,20,14,.15));transition:.6s}
+  .hero:hover .hpanel{flex:.8}
+  .hero .hpanel:hover{flex:1.7}
+  .hpanel:hover img{transform:scale(1.05)}
+  .hpanel:hover::after{background:linear-gradient(to top,rgba(25,20,14,.5),transparent 55%)}
+  .hpanel .lab{position:absolute;left:0;right:0;bottom:40px;z-index:2;text-align:center;color:#fff}
+  .hpanel .lab .no{font-size:11px;letter-spacing:.3em;color:var(--brass-2);display:block;margin-bottom:10px}
+  .hpanel .lab .n{font-family:var(--serif);font-size:clamp(26px,2.4vw,40px)}
+  .hpanel .lab .a{font-size:11px;letter-spacing:.22em;text-transform:uppercase;opacity:.8;margin-top:6px;display:block}
+  .hero .brandline{position:absolute;top:0;left:0;right:0;z-index:5;text-align:center;padding-top:86px;pointer-events:none}
+  .hero .brandline .ky{color:var(--brass-2)}
+  .hero .brandline h1{color:#fff;font-size:clamp(38px,5.6vw,80px);margin-top:14px;line-height:1}
+  .hero .brandline h1 em{color:var(--brass-2)}
+  .hero .scrollcue{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:5;color:#fff;
+    font-size:10px;letter-spacing:.3em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.85}
+  .hero .scrollcue .ln{width:1px;height:32px;background:linear-gradient(#fff,transparent)}
+
+  /* MORPH sequence */
+  .morph{position:relative}
+  .morph .stage{position:relative}
+  .cat{}
+  .cat-media{overflow:hidden;background:var(--paper-3)}
+  .cat-media .ci{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .cat-copy .no{font-family:var(--serif);font-size:15px;color:var(--brass);display:block;margin-bottom:14px;letter-spacing:.04em}
+  .cat-copy h2{font-size:clamp(44px,6vw,86px);line-height:.98;margin-bottom:8px}
+  .cat-copy .a{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:22px}
+  .cat-copy p{color:var(--ink-soft);font-size:16px;max-width:40ch;margin-bottom:28px}
+  /* rail */
+  .rail{display:none}
+
+  /* Fallback / stacked (no enhance): normal alternating rows */
+  .morph:not(.enhanced) .cat{min-height:96vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:5vw;padding:60px 6vw}
+  .morph:not(.enhanced) .cat[data-side="right"] .cat-media{order:2}
+  .morph:not(.enhanced) .cat-media{position:relative;height:80vh}
+  .morph:not(.enhanced) .cat-copy{max-width:460px}
+
+  /* Enhanced (pinned traveling frame) */
+  .morph.enhanced{height:400vh}
+  .morph.enhanced .stage{height:100vh;overflow:hidden;background:linear-gradient(180deg,var(--paper),var(--paper-2));perspective:1600px;perspective-origin:50% 45%}
+  .morph.enhanced .cat{position:absolute;inset:0;display:block;padding:0;min-height:0}
+  .morph.enhanced .cat-media{position:absolute;top:9vh;height:78vh;width:38vw;left:31vw;background:transparent;
+    transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;box-shadow:0 40px 90px -50px rgba(40,32,20,.55)}
+  .morph.enhanced .cat-copy{position:absolute;top:50%;transform:translateY(-50%);width:32vw;opacity:0}
+  .morph.enhanced .cat[data-side="right"] .cat-copy{right:7vw}
+  .morph.enhanced .cat[data-side="left"] .cat-copy{left:13vw}
+  .morph.enhanced .rail{display:flex;flex-direction:column;gap:16px;position:absolute;left:46px;top:50%;transform:translateY(-50%);z-index:6}
+  .morph.enhanced .rail .r{display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);transition:.4s}
+  .morph.enhanced .rail .r .dot{width:22px;height:1px;background:var(--faint);transition:.4s}
+  .morph.enhanced .rail .r.on{color:var(--ink)} .morph.enhanced .rail .r.on .dot{width:40px;background:var(--brass)}
+  .morph.enhanced .cat[data-side="left"] .cat-copy{ }
+
+  /* GALLERY */
+  .gal-wrap{padding:130px 46px;background:var(--paper-2)}
+  .gal-head{text-align:center;margin-bottom:54px}
+  .gal-head h2{font-size:clamp(32px,4.6vw,60px);margin-top:12px} .gal-head h2 em{color:var(--brass)}
+  .gal{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:15vh;gap:14px;max-width:1300px;margin:0 auto}
+  .gal a{position:relative;overflow:hidden;background:var(--paper-3)}
+  .gal a img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+  .gal a:hover img{transform:scale(1.06)}
+  .g1{grid-column:span 2;grid-row:span 2}
+  .g2{grid-column:span 2;grid-row:span 3}
+  .g3{grid-column:span 2;grid-row:span 2}
+  .g4{grid-column:span 2;grid-row:span 2}
+  .g5{grid-column:span 2;grid-row:span 3}
+  .g6{grid-column:span 2;grid-row:span 2}
+
+  /* VIDEO */
+  .video{position:relative;height:100vh;min-height:600px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .video .bg{position:absolute;inset:0;overflow:hidden}
+  .video .bg img{position:absolute;inset:0;width:100%;height:118%;top:-9%;object-fit:cover}
+  .video::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 50%,rgba(20,16,11,.25),rgba(20,16,11,.55))}
+  .video .box{position:relative;z-index:2;text-align:center;color:#fff}
+  .video .box .eyebrow{color:var(--brass-2)}
+  .video .box h2{font-size:clamp(36px,5.4vw,80px);margin:16px 0 26px}
+  .video .play{width:96px;height:96px;border-radius:50%;border:1px solid rgba(255,255,255,.7);margin:0 auto;
+    display:flex;align-items:center;justify-content:center;transition:.4s;cursor:pointer}
+  .video .play:hover{background:rgba(255,255,255,.12);transform:scale(1.06)}
+  .video .play svg{width:22px;height:22px;fill:#fff;margin-left:4px}
+
+  /* NEWSLETTER + FOOTER */
+  .news{padding:130px 46px;background:var(--paper);text-align:center}
+  .news h2{font-size:clamp(34px,5vw,68px);margin:16px 0} .news h2 em{color:var(--brass)}
+  .news p{color:var(--ink-soft);max-width:44ch;margin:0 auto 34px}
+  .news form{display:flex;max-width:480px;margin:0 auto;border-bottom:1px solid var(--ink)}
+  .news input{flex:1;background:transparent;border:0;padding:14px 4px;font-family:var(--sans);font-size:15px;color:var(--ink);outline:none}
+  .news input::placeholder{color:var(--faint)}
+  .news button{background:transparent;border:0;font-size:12px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;color:var(--ink);padding:0 8px}
+  footer{background:var(--ink);color:var(--paper);padding:70px 46px 40px}
+  .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;max-width:1280px;margin:0 auto;padding-bottom:46px;border-bottom:1px solid rgba(239,232,219,.14)}
+  .fgrid .logo{font-family:var(--serif);font-size:28px;letter-spacing:.16em} .fgrid .logo .d{color:var(--brass-2)}
+  .fgrid .bl{color:rgba(239,232,219,.6);margin-top:16px;max-width:280px;font-size:14px}
+  .fgrid h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:18px;color:var(--brass-2)}
+  .fgrid ul{list-style:none} .fgrid li{margin-bottom:11px} .fgrid li a{color:rgba(239,232,219,.75);font-size:14px}
+  .fbot{max-width:1280px;margin:24px auto 0;display:flex;justify-content:space-between;color:rgba(239,232,219,.5);font-size:12px;flex-wrap:wrap;gap:12px}
+
+  .demo{position:fixed;left:16px;bottom:16px;z-index:300;background:rgba(33,29,23,.9);color:var(--paper);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:30px}
+  .switch{position:fixed;right:16px;bottom:16px;z-index:300;background:var(--brass);color:#fff;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border-radius:30px}
+
+  @media (prefers-reduced-motion:reduce){.line .in{transform:none}.reveal{opacity:1;transform:none}}
+  @media (max-width:900px){
+    nav .links,nav .right{display:none}
+    .hero{flex-direction:column}
+    .gal{grid-template-columns:repeat(2,1fr);grid-auto-rows:22vh}
+    .g1,.g2,.g3,.g4,.g5,.g6{grid-column:span 1;grid-row:span 1}
+    .fgrid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+
+<nav id="nav">
+  <div class="links"><a class="n" href="#" data-c>New In</a><a class="n" href="#" data-c>Family</a><a class="n" href="#" data-c>Bed Linen</a><a class="n" href="#" data-c>Journal</a></div>
+  <div class="logo">NIGH<span class="d">·</span>NIGH</div>
+  <div class="right"><a class="n" href="#" data-c>Search</a><a class="n" href="#" data-c>Account</a><a class="n" href="#" data-c>Bag (0)</a></div>
+</nav>
+
+<!-- HERO : 3 category panels -->
+<header class="hero" id="hero">
+  <div class="brandline">
+    <span class="eyebrow ky">Sleepwear &amp; Bed Linen · Est. India</span>
+    <h1>Softness for <em>every</em> age.</h1>
+  </div>
+  <a class="hpanel" data-c><img src="assets/images/stock/infants-swaddle.jpg" alt="Infants"><div class="lab"><span class="no">01</span><span class="n">Infants</span><span class="a">0–24 Months</span></div></a>
+  <a class="hpanel" data-c><img src="assets/images/stock/kids-toddler-stand.jpg" alt="Kids"><div class="lab"><span class="no">02</span><span class="n">Kids</span><span class="a">2–12 Years</span></div></a>
+  <a class="hpanel" data-c><img src="assets/images/stock/hero-silk-pink.jpg" alt="Adults"><div class="lab"><span class="no">03</span><span class="n">Adults</span><span class="a">Sleepwear &amp; Robes</span></div></a>
+  <div class="scrollcue"><span>Scroll</span><span class="ln"></span></div>
+</header>
+
+<!-- MORPH sequence -->
+<section class="morph" id="morph">
+  <div class="stage" id="stage">
+    <div class="rail" id="rail">
+      <div class="r" data-i="0"><span class="dot"></span>01 · Infants</div>
+      <div class="r" data-i="1"><span class="dot"></span>02 · Kids</div>
+      <div class="r" data-i="2"><span class="dot"></span>03 · Adults</div>
+    </div>
+
+    <div class="cat" data-side="right" data-i="0">
+      <div class="cat-media"><img class="ci" src="assets/images/stock/infants-swaddle.jpg" alt="Infants"></div>
+      <div class="cat-copy">
+        <span class="no">01 — Infants</span>
+        <h2>First <em>layers</em>.</h2>
+        <span class="a">0 – 24 Months</span>
+        <p>Whisper-soft jhablas, rompers, and swaddles cut for the tiniest sleepers — gentle on new skin, made for a hundred washes.</p>
+        <a href="#" class="btn" data-c><span>Shop Infants</span></a>
+      </div>
+    </div>
+
+    <div class="cat" data-side="left" data-i="1">
+      <div class="cat-media"><img class="ci" src="assets/images/stock/kids-toddler-stand.jpg" alt="Kids"></div>
+      <div class="cat-copy">
+        <span class="no">02 — Kids</span>
+        <h2>Little <em>dreamers</em>.</h2>
+        <span class="a">2 – 12 Years</span>
+        <p>Playful prints and pyjama sets built for pillow forts and midnight adventures — the pair they'll refuse to take off.</p>
+        <a href="#" class="btn" data-c><span>Shop Kids</span></a>
+      </div>
+    </div>
+
+    <div class="cat" data-side="right" data-i="2">
+      <div class="cat-media"><img class="ci" src="assets/images/stock/hero-silk-pink.jpg" alt="Adults"></div>
+      <div class="cat-copy">
+        <span class="no">03 — Adults</span>
+        <h2>Grown-up <em>indulgence</em>.</h2>
+        <span class="a">Sleepwear &amp; Robes</span>
+        <p>Silk-soft robes, sleepgowns, and pyjamas for the grown-ups who still believe in bedtime stories. Because rest is a ritual.</p>
+        <a href="#" class="btn" data-c><span>Shop Adults</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY (Lookbook) -->
+<section class="gal-wrap">
+  <div class="gal-head">
+    <span class="eyebrow">The Lookbook</span>
+    <h2><span class="line"><span class="in">Nights worth <em>dreaming</em> in</span></span></h2>
+  </div>
+  <div class="gal">
+    <a class="g1 reveal" href="#" data-c><img src="assets/images/stock/family-fairisle.jpg" alt=""></a>
+    <a class="g2 reveal" href="#" data-c><img src="assets/images/stock/adults-navy-garden.jpg" alt=""></a>
+    <a class="g3 reveal" href="#" data-c><img src="assets/images/stock/kids-bedtime-pink.jpg" alt=""></a>
+    <a class="g4 reveal" href="#" data-c><img src="assets/images/stock/bedlinen-sunlit.jpg" alt=""></a>
+    <a class="g5 reveal" href="#" data-c><img src="assets/images/stock/mother-baby-lux.jpg" alt=""></a>
+    <a class="g6 reveal" href="#" data-c><img src="assets/images/stock/adults-mauve-sofa.jpg" alt=""></a>
+  </div>
+</section>
+
+<!-- VIDEO / CAMPAIGN -->
+<section class="video">
+  <div class="bg" data-parallax><img src="assets/images/stock/bedroom-sunlit-bed.jpg" alt=""></div>
+  <div class="box">
+    <span class="eyebrow">Winter Film ’26</span>
+    <h2><span class="line"><span class="in">Huddle. Cuddle. <em>Sleep.</em></span></span></h2>
+    <div class="play" data-c data-l="Play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="news">
+  <span class="eyebrow">Join the Bedtime Club</span>
+  <h2><span class="line"><span class="in">10% off your first <em>cuddle</em>.</span></span></h2>
+  <p class="reveal">Be first to new prints, family drops, and quiet little joys.</p>
+  <form class="reveal" onsubmit="return false"><input type="email" placeholder="Your email address"><button type="submit" data-c>Subscribe →</button></form>
+</section>
+
+<footer>
+  <div class="fgrid">
+    <div><div class="logo">NIGH<span class="d">·</span>NIGH</div><p class="bl">Imaginative sleepwear and bed linen for the whole family. Handcrafted in India, made to be lived in.</p></div>
+    <div><h4>Shop</h4><ul><li><a href="#" data-c>New In</a></li><li><a href="#" data-c>Infants</a></li><li><a href="#" data-c>Kids</a></li><li><a href="#" data-c>Adults</a></li><li><a href="#" data-c>Bed Linen</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#" data-c>Shipping</a></li><li><a href="#" data-c>Returns</a></li><li><a href="#" data-c>Size Guide</a></li><li><a href="#" data-c>Contact</a></li></ul></div>
+    <div><h4>Our World</h4><ul><li><a href="#" data-c>Our Story</a></li><li><a href="#" data-c>Fabric &amp; Care</a></li><li><a href="#" data-c>Personalisation</a></li><li><a href="#" data-c>Journal</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2026 Nigh Nigh. All rights reserved.</span><span>Option 3 · Morphing categories</span></div>
+</footer>
+
+<div class="demo">Option 3 · scroll through the categories</div>
+<a class="switch" href="index.html" data-c>← Compare options</a>
+
+<script src="assets/js/gsap.min.js"></script>
+<script src="assets/js/ScrollTrigger.min.js"></script>
+<script src="assets/js/lenis.min.js"></script>
+<script>
+(function(){
+  var params=new URLSearchParams(location.search);
+  var noLenis=params.has('nolenis');
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var ok=window.gsap&&window.ScrollTrigger;
+  if(ok) gsap.registerPlugin(ScrollTrigger);
+  var nav=document.getElementById('nav');
+  function navState(y){ nav.classList.toggle('solid', y>window.innerHeight*0.7); }
+  navState(0);
+
+  var cur=document.getElementById('cursor');
+  if(cur && matchMedia('(pointer:fine)').matches){
+    var cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
+    addEventListener('mousemove',function(e){tx=e.clientX;ty=e.clientY;});
+    (function loop(){cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop);})();
+    document.querySelectorAll('[data-c]').forEach(function(el){
+      el.addEventListener('mouseenter',function(){cur.classList.add('big');if(el.dataset.l){cur.classList.add('lbl');cur.setAttribute('data-l',el.dataset.l);}});
+      el.addEventListener('mouseleave',function(){cur.classList.remove('big','lbl');});
+    });
+  } else if(cur){cur.style.display='none';}
+
+  function showAll(){
+    document.querySelectorAll('.line .in').forEach(function(e){e.style.transform='none';});
+    document.querySelectorAll('.reveal').forEach(function(e){e.style.opacity=1;e.style.transform='none';});
+  }
+  if(reduce||!ok){ showAll(); addEventListener('scroll',function(){navState(scrollY);}); return; }
+
+  var lenis=null;
+  if(!noLenis){
+    lenis=new Lenis({lerp:.08,smoothWheel:true});
+    lenis.on('scroll',function(e){ScrollTrigger.update();navState(e.scroll||scrollY);});
+    gsap.ticker.add(function(t){lenis.raf(t*1000);});
+    gsap.ticker.lagSmoothing(0);
+  } else {
+    addEventListener('scroll',function(){navState(scrollY);});
+  }
+
+  /* ---------- MORPH: enhance ---------- */
+  var morph=document.getElementById('morph');
+  morph.classList.add('enhanced');
+  var cats=gsap.utils.toArray('#morph .cat');
+  var railItems=gsap.utils.toArray('#rail .r');
+  var LEFT=-62, RIGHT=62;
+
+  var MEDIA='#morph .cat-media';
+  var c0=cats[0], c1=cats[1], c2=cats[2];
+  var ci0=c0.querySelector('.ci'), ci1=c1.querySelector('.ci'), ci2=c2.querySelector('.ci');
+  var cp0=c0.querySelector('.cat-copy'), cp1=c1.querySelector('.cat-copy'), cp2=c2.querySelector('.cat-copy');
+  var LEFTx=-62, RIGHTx=62;
+
+  // initial: Infants frame descending from above, turned, on the left
+  gsap.set(MEDIA,{xPercent:LEFTx, yPercent:-38, scale:1.14, rotationY:-16, rotationZ:-3, transformPerspective:1600});
+  gsap.set(ci0,{opacity:1}); gsap.set([ci1,ci2],{opacity:0});
+  gsap.set(cp0,{opacity:1,y:0}); gsap.set([cp1,cp2],{opacity:0,y:28});
+  railItems[0].classList.add('on');
+  function setRail(i){ railItems.forEach(function(r,n){ r.classList.toggle('on', n===i); }); }
+
+  var master=gsap.timeline({
+    scrollTrigger:{ trigger:'#morph', start:'top top', end:'bottom bottom', scrub:1,
+      pin:'#stage', anticipatePin:1, invalidateOnRefresh:true,
+      onUpdate:function(self){ var p=self.progress; setRail(p<0.4?0:(p<0.73?1:2)); } }
+  });
+
+  master
+  // 1 · Infants — descends & straightens into place
+  .to(MEDIA,{yPercent:0,scale:1,rotationY:0,rotationZ:0,duration:.8,ease:'power3.out'},0)
+  .to(MEDIA,{yPercent:9,scale:1.05,duration:.7,ease:'sine.inOut'},0.8)   // living drift
+  // 2 · Infants → Kids — shrink, turn, travel down & across, morph
+  .to(MEDIA,{scale:.72,rotationY:24,rotationZ:6,duration:.5,ease:'power2.in'},1.6)
+  .to(MEDIA,{xPercent:RIGHTx,yPercent:32,duration:1.05,ease:'power2.inOut'},1.6)
+  .to(ci0,{opacity:0,duration:.5},1.9).to(ci1,{opacity:1,duration:.5},1.9)
+  .to(cp0,{opacity:0,y:-28,duration:.4},1.6).fromTo(cp1,{opacity:0,y:28},{opacity:1,y:0,duration:.55},2.2)
+  .to(MEDIA,{scale:1,rotationY:0,rotationZ:0,yPercent:0,duration:.65,ease:'power3.out'},2.45)
+  .to(MEDIA,{yPercent:9,scale:1.05,duration:.7,ease:'sine.inOut'},3.15)   // living drift
+  // 3 · Kids → Adults — shrink, turn other way, travel down & across, morph
+  .to(MEDIA,{scale:.72,rotationY:-24,rotationZ:-6,duration:.5,ease:'power2.in'},4.0)
+  .to(MEDIA,{xPercent:LEFTx,yPercent:32,duration:1.05,ease:'power2.inOut'},4.0)
+  .to(ci1,{opacity:0,duration:.5},4.3).to(ci2,{opacity:1,duration:.5},4.3)
+  .to(cp1,{opacity:0,y:-28,duration:.4},4.0).fromTo(cp2,{opacity:0,y:28},{opacity:1,y:0,duration:.55},4.6)
+  .to(MEDIA,{scale:1,rotationY:0,rotationZ:0,yPercent:0,duration:.65,ease:'power3.out'},4.85)
+  // 4 · Adults — settle
+  .to(MEDIA,{yPercent:7,scale:1.03,duration:.7,ease:'sine.inOut'},5.5);
+
+  /* ---------- generic reveals ---------- */
+  gsap.utils.toArray('.line .in').forEach(function(el){
+    gsap.fromTo(el,{yPercent:103},{yPercent:0,duration:1.1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true}});
+  });
+  gsap.utils.toArray('.reveal').forEach(function(el){
+    gsap.fromTo(el,{opacity:0,y:26},{opacity:1,y:0,duration:1,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 94%',once:true}});
+  });
+  gsap.utils.toArray('.gal a').forEach(function(el,i){
+    gsap.fromTo(el,{y:60,opacity:0},{y:0,opacity:1,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:'.gal',start:'top 80%',once:true},delay:i*.08});
+  });
+  gsap.utils.toArray('[data-parallax]').forEach(function(w){
+    var img=w.querySelector('img'); if(!img) return;
+    gsap.fromTo(img,{yPercent:-6},{yPercent:6,ease:'none',scrollTrigger:{trigger:w,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+
+  window.addEventListener('load',function(){ ScrollTrigger.refresh(); });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ ScrollTrigger.refresh(); });
+  setTimeout(function(){ ScrollTrigger.refresh(); },800);
+})();
+</script>
+</body>
+</html>

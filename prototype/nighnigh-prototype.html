@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nigh Nigh — Cinematic (Option 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE8DB; --paper-2:#E7DECE; --paper-3:#DFD4C0; --card:#F5F0E7;
+    --ink:#211D17; --ink-2:#3B352C; --ink-soft:#6E655A; --faint:#9A9081;
+    --brass:#96793B; --brass-2:#B79A5A; --midnight:#2C3A45;
+    --line:rgba(33,29,23,.16); --line-2:rgba(33,29,23,.08);
+    --serif:'Fraunces',Georgia,serif; --sans:'Jost',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--paper)}
+  body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden;font-weight:300;line-height:1.6}
+  h1,h2,h3{font-family:var(--serif);font-weight:300;line-height:1.02;letter-spacing:-.018em}
+  em{font-style:italic}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;font-weight:500;color:var(--brass)}
+  .btn{display:inline-block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
+    padding:16px 38px;border:1px solid var(--ink);color:var(--ink);background:transparent;position:relative;overflow:hidden;transition:.4s}
+  .btn span{position:relative;z-index:2;transition:.4s}
+  .btn::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(101%);transition:.45s cubic-bezier(.7,0,.2,1);z-index:1}
+  .btn:hover::before{transform:translateY(0)}
+  .btn:hover span{color:var(--paper)}
+  .btn-fill{background:var(--ink);color:var(--paper)}
+  .btn-fill::before{background:var(--brass)}
+  .btn-fill:hover span{color:var(--ink)}
+  .btn-light{border-color:var(--paper);color:var(--paper)}
+  .btn-light::before{background:var(--paper)}
+  .btn-light:hover span{color:var(--ink)}
+
+  .cursor{position:fixed;top:0;left:0;width:9px;height:9px;border-radius:50%;background:var(--ink);
+    pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,background .3s;mix-blend-mode:difference}
+  .cursor.big{width:64px;height:64px;background:var(--paper)}
+  .cursor.big.lbl::after{content:attr(data-l);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);mix-blend-mode:normal}
+  @media (pointer:coarse){.cursor{display:none}}
+
+  nav{position:fixed;top:0;left:0;right:0;z-index:200;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:26px 46px;transition:.5s}
+  nav.solid{background:rgba(239,232,219,.86);backdrop-filter:blur(16px);padding:15px 46px;border-bottom:1px solid var(--line-2)}
+  nav .links,nav .right{display:flex;gap:28px}
+  nav .right{justify-content:flex-end}
+  nav a.n{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+  nav .logo{font-family:var(--serif);font-size:23px;letter-spacing:.18em;text-align:center}
+  nav .logo .d{color:var(--brass)}
+
+  .line{overflow:hidden;display:block}
+  .line .in{display:block;transform:translateY(103%)}
+  .reveal{opacity:0;transform:translateY(26px)}
+
+  /* HERO — decluttered: subject bottom-right, copy bottom-left */
+  .hero{position:relative;height:100vh;min-height:700px;overflow:hidden;
+    background:radial-gradient(120% 100% at 74% 14%, #F7F2E8 0%, #EFE8DB 46%, #E3D8C4 100%)}
+  .hero .sun{position:absolute;right:16%;top:16%;width:120px;height:120px;border-radius:50%;z-index:1;
+    background:radial-gradient(circle at 40% 38%,#fff8ea,#f0e2c1 70%,#e6d4ab);box-shadow:0 0 70px rgba(224,196,120,.5)}
+  .hero-head{position:absolute;left:0;right:0;top:41%;transform:translateY(-50%);z-index:2;text-align:center;
+    font-family:var(--serif);font-weight:300;color:var(--ink);font-size:clamp(84px,17vw,250px);line-height:.82;
+    letter-spacing:-.025em;white-space:nowrap;pointer-events:none;padding-left:4vw}
+  .subject{position:absolute;right:6%;bottom:0;z-index:3;height:90%;filter:drop-shadow(0 40px 55px rgba(60,50,35,.3))}
+  .subject img{height:100%;width:auto;object-fit:contain}
+  .hero-lead{position:absolute;left:46px;bottom:52px;z-index:4;max-width:340px}
+  .hero-lead .eyebrow{display:block;margin-bottom:16px}
+  .hero-lead .tl{font-family:var(--serif);font-size:23px;line-height:1.2;margin-bottom:22px}
+  .hero-lead .tl em{color:var(--brass)}
+  .scrollcue{position:absolute;bottom:46px;right:46px;z-index:5;font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+    color:var(--ink-soft);display:flex;align-items:center;gap:12px}
+  .scrollcue .ln{width:46px;height:1px;background:var(--ink-soft);position:relative;overflow:hidden}
+  .scrollcue .ln::after{content:"";position:absolute;inset:0;background:var(--brass);transform:translateX(-100%);animation:sweep 2.4s infinite}
+  @keyframes sweep{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+
+  /* marquee */
+  .marq{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;background:var(--paper-2);overflow:hidden;white-space:nowrap}
+  .marq .row{display:inline-block;will-change:transform}
+  .marq span{font-family:var(--serif);font-size:26px;font-style:italic;color:var(--ink-2);padding:0 34px}
+  .marq span::after{content:"·";color:var(--brass);margin-left:34px}
+
+  /* full-screen cinematic scene */
+  .cine{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;justify-content:center;
+    text-align:center;overflow:hidden}
+  .cine .bg{position:absolute;inset:0;overflow:hidden}
+  .cine .bg img{position:absolute;inset:0;width:100%;height:122%;top:-11%;object-fit:cover}
+  .cine .ov{position:absolute;inset:0;z-index:1}
+  .cine .box{position:relative;z-index:2;max-width:900px;padding:0 40px}
+  .cine .box .eyebrow{display:block;margin-bottom:20px}
+  .cine .box h2{font-size:clamp(40px,6.4vw,92px);line-height:1.02}
+  .cine .box p{margin:26px auto 0;max-width:50ch;font-size:16px}
+  .cine .box .cta{margin-top:34px}
+  .cine.dark .box{color:var(--paper)} .cine.dark .box h2 em{color:var(--brass-2)} .cine.dark .box p{opacity:.9}
+  .cine.dark .box .eyebrow{color:var(--brass-2)}
+  .cine.light .box{color:var(--ink)} .cine.light .box h2 em{color:var(--brass)} .cine.light .box p{color:var(--ink-soft)}
+  .ov.dark{background:radial-gradient(120% 100% at 50% 50%, rgba(20,16,11,.28), rgba(20,16,11,.62))}
+  .ov.light{background:radial-gradient(120% 100% at 50% 45%, rgba(244,239,230,.55), rgba(244,239,230,.8))}
+  .ov.bottom{background:linear-gradient(to top, rgba(20,16,11,.6), transparent 60%)}
+
+  /* pills scene (light) */
+  .pills{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+    background:radial-gradient(90% 90% at 50% 28%, #F7F2E8, #E3D8C4 80%)}
+  .pills .figure{position:relative;z-index:2;height:82vh;max-height:780px}
+  .pills .figure img{height:100%;width:auto;filter:drop-shadow(0 30px 45px rgba(60,50,35,.26))}
+  .pills .headline{position:absolute;z-index:1;top:12%;left:0;right:0;text-align:center}
+  .pills .headline .eyebrow{display:block;margin-bottom:14px}
+  .pills .headline h2{font-size:clamp(40px,7vw,104px);color:var(--ink)}
+  .pills .headline h2 em{color:var(--brass)}
+  .pill{position:absolute;z-index:3;background:rgba(255,253,248,.62);border:1px solid rgba(33,29,23,.16);
+    backdrop-filter:blur(10px);border-radius:40px;padding:12px 22px;font-size:13px;letter-spacing:.06em;color:var(--ink);
+    white-space:nowrap;box-shadow:0 14px 34px rgba(60,50,35,.14);display:flex;align-items:center;gap:9px}
+  .pill i{width:6px;height:6px;border-radius:50%;background:var(--brass)}
+
+  /* collections */
+  .cols{padding:130px 46px 140px;background:var(--paper-2)}
+  .cols .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;margin-bottom:52px}
+  .cols .head h2{font-size:clamp(32px,4.6vw,60px)}
+  .cols .head h2 em{color:var(--brass)}
+  .cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:1240px;margin:0 auto}
+  .card{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--paper-3);cursor:pointer}
+  .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:1s cubic-bezier(.2,.7,.2,1)}
+  .card:hover img{transform:scale(1.06)}
+  .card::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(30,24,17,.6),transparent 52%)}
+  .card .lab{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px;display:flex;justify-content:space-between;align-items:flex-end;color:#fff}
+  .card .lab .n{font-family:var(--serif);font-size:22px}
+  .card .lab .c{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-2)}
+
+  footer{background:var(--ink);color:var(--paper);padding:70px 46px 40px}
+  .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:44px;max-width:1280px;margin:0 auto;padding-bottom:46px;border-bottom:1px solid rgba(239,232,219,.14)}
+  .fgrid .logo{font-family:var(--serif);font-size:28px;letter-spacing:.16em}
+  .fgrid .logo .d{color:var(--brass-2)}
+  .fgrid .bl{color:rgba(239,232,219,.6);margin-top:16px;max-width:280px;font-size:14px}
+  .fgrid h4{font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:18px;color:var(--brass-2)}
+  .fgrid ul{list-style:none} .fgrid li{margin-bottom:11px}
+  .fgrid li a{color:rgba(239,232,219,.75);font-size:14px}
+  .fbot{max-width:1280px;margin:24px auto 0;display:flex;justify-content:space-between;color:rgba(239,232,219,.5);font-size:12px;flex-wrap:wrap;gap:12px}
+
+  .demo{position:fixed;left:16px;bottom:16px;z-index:300;background:rgba(33,29,23,.9);color:var(--paper);
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:8px 14px;border-radius:30px}
+  .switch{position:fixed;right:16px;bottom:16px;z-index:300;background:var(--brass);color:#fff;
+    font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:9px 16px;border-radius:30px}
+
+  @media (prefers-reduced-motion:reduce){.line .in{transform:none}.reveal{opacity:1;transform:none}}
+  @media (max-width:900px){
+    nav .links,nav .right{display:none}
+    .cgrid{grid-template-columns:1fr 1fr}
+    .subject{height:64%;right:2%}
+    .hero-head{top:34%}
+    .hero-lead{max-width:70%}
+    .pills .figure{height:58vh}
+    .fgrid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+
+<nav id="nav">
+  <div class="links"><a class="n" href="#" data-c>New In</a><a class="n" href="#" data-c>Family</a><a class="n" href="#" data-c>Collections</a><a class="n" href="#" data-c>Bed Linen</a></div>
+  <div class="logo">NIGH<span class="d">·</span>NIGH</div>
+  <div class="right"><a class="n" href="#" data-c>Search</a><a class="n" href="#" data-c>Account</a><a class="n" href="#" data-c>Bag (0)</a></div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="sun" id="sun"></div>
+  <div class="hero-head" id="heroHead">Goodnight</div>
+  <div class="subject" id="subject"><img src="assets/images/cutouts/cut-navy-garden.png" alt="Sleepwear"></div>
+  <div class="hero-lead">
+    <span class="eyebrow" id="heroEy">Sleepwear &amp; Bed Linen · Est. India</span>
+    <div class="tl" id="heroTl">Sleep, <em>beautifully</em> — for every age under one roof.</div>
+    <a href="#" class="btn btn-fill" id="heroBtn" data-c><span>Shop the Collection</span></a>
+  </div>
+  <div class="scrollcue"><span>Scroll</span><span class="ln"></span></div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marq"><div class="row" id="marq">
+  <span>Infants</span><span>Kids</span><span>Adults</span><span>Family Matching</span><span>Bed Linen</span><span>Personalisation</span><span>Infants</span><span>Kids</span><span>Adults</span><span>Family Matching</span><span>Bed Linen</span><span>Personalisation</span>
+</div></div>
+
+<!-- SCENE 1 · THE RITUAL (light) -->
+<section class="cine light">
+  <div class="bg" data-parallax><img src="assets/images/stock/fabric-texture.jpg" alt=""></div>
+  <div class="ov light"></div>
+  <div class="box">
+    <span class="eyebrow">The Ritual</span>
+    <h2><span class="line"><span class="in">Every good day begins</span></span><span class="line"><span class="in">the night <em>before</em>.</span></span></h2>
+    <p class="reveal">Nigh Nigh is a small ritual of softness — the cotton you reach for when the world finally goes quiet, cut for the whole family in prints worth dreaming in.</p>
+  </div>
+</section>
+
+<!-- SCENE 2 · FAMILY MATCHING (dark over photo) -->
+<section class="cine dark">
+  <div class="bg" data-parallax><img src="assets/images/stock/family-fairisle.jpg" alt="Family matching"></div>
+  <div class="ov dark"></div>
+  <div class="box">
+    <span class="eyebrow">The Family Edit</span>
+    <h2><span class="line"><span class="in">Bedtime,</span></span><span class="line"><span class="in"><em>together</em>.</span></span></h2>
+    <p class="reveal">One print, every size — from the swaddle to the sleepgown, so no one is left out of the cuddle.</p>
+    <div class="cta reveal"><a href="#" class="btn btn-light" data-c><span>Shop Family Matching</span></a></div>
+  </div>
+</section>
+
+<!-- SCENE 3 · PILLS / FABRIC (light) -->
+<section class="pills">
+  <div class="headline">
+    <span class="eyebrow">The Feel of Nigh Nigh</span>
+    <h2 class="line"><span class="in">Softness, for <em>humans</em>.</span></h2>
+  </div>
+  <div class="figure reveal"><img src="assets/images/cutouts/cut-mauve-sofa.png" alt="Loungewear"></div>
+  <div class="pill float" style="left:14%;top:34%"><i></i>100% Breathable Cotton</div>
+  <div class="pill float" style="right:12%;top:30%"><i></i>OEKO-TEX® Certified</div>
+  <div class="pill float" style="left:10%;bottom:26%"><i></i>Pre-Shrunk &amp; Skin-Safe</div>
+  <div class="pill float" style="right:10%;bottom:30%"><i></i>SlumberSoft™ Weave</div>
+  <div class="pill float" style="right:24%;top:54%"><i></i>Softer with every wash</div>
+</section>
+
+<!-- SCENE 4 · BED LINEN (dark over photo) -->
+<section class="cine dark">
+  <div class="bg" data-parallax><img src="assets/images/stock/bedroom-sunlit-bed.jpg" alt="Bed linen"></div>
+  <div class="ov dark"></div>
+  <div class="box">
+    <span class="eyebrow">Dress the Whole Bed</span>
+    <h2><span class="line"><span class="in">Linen that loves</span></span><span class="line"><span class="in">you <em>back</em>.</span></span></h2>
+    <p class="reveal">Buttery bedsheets, cloud-light dohars, and quilted rajais in prints that match their pajamas.</p>
+    <div class="cta reveal"><a href="#" class="btn btn-light" data-c><span>Shop Bed Linen</span></a></div>
+  </div>
+</section>
+
+<!-- SCENE 5 · COLLECTIONS -->
+<section class="cols">
+  <div class="head">
+    <div><span class="eyebrow" style="display:block;margin-bottom:14px">Shop by Age</span>
+      <h2><span class="line"><span class="in">Softness for <em>every</em> age</span></span></h2></div>
+    <a href="#" class="btn" data-c><span>View All</span></a>
+  </div>
+  <div class="cgrid">
+    <a class="card" href="#" data-c data-l="Shop"><img src="assets/images/stock/infants-swaddle.jpg" alt=""><div class="lab"><span class="n">Infants</span><span class="c">0–24m</span></div></a>
+    <a class="card" href="#" data-c data-l="Shop"><img src="assets/images/stock/kids-toddler-stand.jpg" alt=""><div class="lab"><span class="n">Kids</span><span class="c">2–12y</span></div></a>
+    <a class="card" href="#" data-c data-l="Shop"><img src="assets/images/stock/adults-white-robe.jpg" alt=""><div class="lab"><span class="n">Adults</span><span class="c">Robes</span></div></a>
+    <a class="card" href="#" data-c data-l="Shop"><img src="assets/images/stock/hero-silk-pink.jpg" alt=""><div class="lab"><span class="n">New In</span><span class="c">Winter ’26</span></div></a>
+  </div>
+</section>
+
+<!-- SCENE 6 · PERSONALISATION (dark over photo) -->
+<section class="cine dark">
+  <div class="bg" data-parallax><img src="assets/images/stock/perso-folded.jpg" alt="Personalisation"></div>
+  <div class="ov dark"></div>
+  <div class="box">
+    <span class="eyebrow">Make It Theirs</span>
+    <h2><span class="line"><span class="in">Free</span></span><span class="line"><span class="in"><em>monogramming</em>.</span></span></h2>
+    <p class="reveal">A name, an initial, a tiny embroidered star — a small touch that turns a pajama into a keepsake. Complimentary this season.</p>
+    <div class="cta reveal"><a href="#" class="btn btn-light" data-c><span>Personalise a Set</span></a></div>
+  </div>
+</section>
+
+<!-- SCENE 7 · FINAL (light over airy photo) -->
+<section class="cine light">
+  <div class="bg" data-parallax><img src="assets/images/stock/mother-kiss-white.jpg" alt=""></div>
+  <div class="ov light"></div>
+  <div class="box">
+    <span class="eyebrow">Goodnight</span>
+    <h2><span class="line"><span class="in">Sleep,</span></span><span class="line"><span class="in"><em>beautifully</em>.</span></span></h2>
+    <p class="reveal">Huddle, cuddle, sleep, repeat — for every age under one roof.</p>
+    <div class="cta reveal"><a href="#" class="btn btn-fill" data-c><span>Explore Nigh Nigh</span></a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="fgrid">
+    <div><div class="logo">NIGH<span class="d">·</span>NIGH</div><p class="bl">Imaginative sleepwear and bed linen for the whole family. Handcrafted in India, made to be lived in.</p></div>
+    <div><h4>Shop</h4><ul><li><a href="#" data-c>New In</a></li><li><a href="#" data-c>Infants</a></li><li><a href="#" data-c>Kids</a></li><li><a href="#" data-c>Adults</a></li><li><a href="#" data-c>Bed Linen</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="#" data-c>Shipping</a></li><li><a href="#" data-c>Returns</a></li><li><a href="#" data-c>Size Guide</a></li><li><a href="#" data-c>Contact</a></li></ul></div>
+    <div><h4>Our World</h4><ul><li><a href="#" data-c>Our Story</a></li><li><a href="#" data-c>Fabric &amp; Care</a></li><li><a href="#" data-c>Personalisation</a></li><li><a href="#" data-c>Journal</a></li></ul></div>
+  </div>
+  <div class="fbot"><span>© 2026 Nigh Nigh. All rights reserved.</span><span>Option 2 · Cinematic direction</span></div>
+</footer>
+
+<div class="demo">Option 2 · Cinematic · scroll to feel motion</div>
+<a class="switch" href="index.html" data-c>← Compare options</a>
+
+<script src="assets/js/gsap.min.js"></script>
+<script src="assets/js/ScrollTrigger.min.js"></script>
+<script src="assets/js/lenis.min.js"></script>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var ok=window.gsap&&window.ScrollTrigger;
+  if(ok) gsap.registerPlugin(ScrollTrigger);
+  var nav=document.getElementById('nav');
+  function navState(y){ nav.classList.toggle('solid', y>60); }
+  navState(0);
+
+  var cur=document.getElementById('cursor');
+  if(cur && matchMedia('(pointer:fine)').matches){
+    var cx=innerWidth/2,cy=innerHeight/2,tx=cx,ty=cy;
+    addEventListener('mousemove',function(e){tx=e.clientX;ty=e.clientY;});
+    (function loop(){cx+=(tx-cx)*.18;cy+=(ty-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop);})();
+    document.querySelectorAll('[data-c]').forEach(function(el){
+      el.addEventListener('mouseenter',function(){cur.classList.add('big');if(el.dataset.l){cur.classList.add('lbl');cur.setAttribute('data-l',el.dataset.l);}});
+      el.addEventListener('mouseleave',function(){cur.classList.remove('big','lbl');});
+    });
+  } else if(cur){cur.style.display='none';}
+
+  function showAll(){
+    document.querySelectorAll('.line .in').forEach(function(e){e.style.transform='none';});
+    document.querySelectorAll('.reveal').forEach(function(e){e.style.opacity=1;e.style.transform='none';});
+  }
+  if(reduce||!ok){ showAll(); addEventListener('scroll',function(){navState(scrollY);}); return; }
+
+  var lenis=new Lenis({lerp:.085,smoothWheel:true});
+  lenis.on('scroll',function(e){ScrollTrigger.update();navState(e.scroll||scrollY);});
+  gsap.ticker.add(function(t){lenis.raf(t*1000);});
+  gsap.ticker.lagSmoothing(0);
+
+  /* hero intro */
+  gsap.set('#heroHead',{yPercent:8,opacity:0});
+  gsap.set('#subject',{yPercent:6,opacity:0});
+  gsap.set(['#heroEy','#heroTl','#heroBtn'],{y:24,opacity:0});
+  gsap.set('#sun',{scale:.6,opacity:0});
+  gsap.timeline({defaults:{ease:'power3.out'}})
+    .to('#sun',{scale:1,opacity:1,duration:1.4},.1)
+    .to('#heroHead',{yPercent:0,opacity:1,duration:1.3},.2)
+    .to('#subject',{yPercent:0,opacity:1,duration:1.4},.4)
+    .to('#heroEy',{y:0,opacity:1,duration:.9},'-=.9')
+    .to('#heroTl',{y:0,opacity:1,duration:.9},'-=.75')
+    .to('#heroBtn',{y:0,opacity:1,duration:.9},'-=.65');
+
+  /* hero parallax */
+  gsap.to('#heroHead',{yPercent:-34,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('#subject',{yPercent:10,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('#sun',{yPercent:60,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+
+  /* marquee */
+  gsap.to('#marq',{xPercent:-50,duration:24,ease:'none',repeat:-1});
+
+  /* reveals (robust: once, safe start) */
+  gsap.utils.toArray('.line .in').forEach(function(el){
+    if(el.closest('.hero')) return;
+    gsap.fromTo(el,{yPercent:103},{yPercent:0,duration:1.1,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 92%',once:true}});
+  });
+  gsap.utils.toArray('.reveal').forEach(function(el){
+    if(el.closest('.hero')) return;
+    gsap.fromTo(el,{opacity:0,y:26},{opacity:1,y:0,duration:1,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 94%',once:true}});
+  });
+  gsap.fromTo('.cgrid .card',{y:60,opacity:0},{y:0,opacity:1,duration:1,stagger:.12,ease:'power3.out',
+    scrollTrigger:{trigger:'.cgrid',start:'top 82%',once:true}});
+
+  /* scene bg parallax */
+  gsap.utils.toArray('[data-parallax]').forEach(function(w){
+    var img=w.querySelector('img'); if(!img) return;
+    gsap.fromTo(img,{yPercent:-6},{yPercent:6,ease:'none',
+      scrollTrigger:{trigger:w,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+
+  /* floating pills */
+  gsap.utils.toArray('.pill.float').forEach(function(p,i){
+    gsap.to(p,{y:'+=14',duration:2.6+i*.3,repeat:-1,yoyo:true,ease:'sine.inOut',delay:i*.2});
+    gsap.fromTo(p,{opacity:0,scale:.8},{opacity:1,scale:1,duration:.9,ease:'back.out(1.6)',
+      scrollTrigger:{trigger:'.pills',start:'top 60%',once:true},delay:i*.1});
+  });
+  gsap.to('.pills .figure',{yPercent:-8,ease:'none',scrollTrigger:{trigger:'.pills',start:'top bottom',end:'bottom top',scrub:true}});
+
+  /* recalc after fonts/images so nothing stays hidden */
+  window.addEventListener('load',function(){ ScrollTrigger.refresh(); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ ScrollTrigger.refresh(); });
+  setTimeout(function(){ ScrollTrigger.refresh(); },800);
+})();
+</script>
+</body>
+</html>
