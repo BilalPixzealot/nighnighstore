@@ -90,8 +90,8 @@
   .morph:not(.enhanced) .cat-copy{max-width:460px}
 
   /* Enhanced (pinned traveling frame) */
-  .morph.enhanced{height:400vh}
-  .morph.enhanced .stage{height:100vh;overflow:hidden;background:linear-gradient(180deg,var(--paper),var(--paper-2));perspective:1600px;perspective-origin:50% 45%}
+  .morph.enhanced{height:520vh}
+  .morph.enhanced .stage{height:100vh;overflow:hidden;background:linear-gradient(180deg,var(--paper),var(--paper-2));perspective:1250px;perspective-origin:50% 45%}
   .morph.enhanced .cat{position:absolute;inset:0;display:block;padding:0;min-height:0}
   .morph.enhanced .cat-media{position:absolute;top:9vh;height:78vh;width:38vw;left:31vw;background:transparent;
     transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;box-shadow:0 40px 90px -50px rgba(40,32,20,.55)}
@@ -327,8 +327,8 @@
   var cp0=c0.querySelector('.cat-copy'), cp1=c1.querySelector('.cat-copy'), cp2=c2.querySelector('.cat-copy');
   var LEFTx=-62, RIGHTx=62;
 
-  // initial: Infants frame descending from above, turned, on the left
-  gsap.set(MEDIA,{xPercent:LEFTx, yPercent:-38, scale:1.14, rotationY:-16, rotationZ:-3, transformPerspective:1600});
+  // initial: Infants frame turned near edge-on, small, entering from upper-left
+  gsap.set(MEDIA,{xPercent:-52, yPercent:-24, scale:.8, rotationY:-74, rotationZ:-2, transformPerspective:1250});
   gsap.set(ci0,{opacity:1}); gsap.set([ci1,ci2],{opacity:0});
   gsap.set(cp0,{opacity:1,y:0}); gsap.set([cp1,cp2],{opacity:0,y:28});
   railItems[0].classList.add('on');
@@ -341,24 +341,24 @@
   });
 
   master
-  // 1 · Infants — descends & straightens into place
-  .to(MEDIA,{yPercent:0,scale:1,rotationY:0,rotationZ:0,duration:.8,ease:'power3.out'},0)
-  .to(MEDIA,{yPercent:9,scale:1.05,duration:.7,ease:'sine.inOut'},0.8)   // living drift
-  // 2 · Infants → Kids — shrink, turn, travel down & across, morph
-  .to(MEDIA,{scale:.72,rotationY:24,rotationZ:6,duration:.5,ease:'power2.in'},1.6)
-  .to(MEDIA,{xPercent:RIGHTx,yPercent:32,duration:1.05,ease:'power2.inOut'},1.6)
-  .to(ci0,{opacity:0,duration:.5},1.9).to(ci1,{opacity:1,duration:.5},1.9)
-  .to(cp0,{opacity:0,y:-28,duration:.4},1.6).fromTo(cp1,{opacity:0,y:28},{opacity:1,y:0,duration:.55},2.2)
-  .to(MEDIA,{scale:1,rotationY:0,rotationZ:0,yPercent:0,duration:.65,ease:'power3.out'},2.45)
-  .to(MEDIA,{yPercent:9,scale:1.05,duration:.7,ease:'sine.inOut'},3.15)   // living drift
-  // 3 · Kids → Adults — shrink, turn other way, travel down & across, morph
-  .to(MEDIA,{scale:.72,rotationY:-24,rotationZ:-6,duration:.5,ease:'power2.in'},4.0)
-  .to(MEDIA,{xPercent:LEFTx,yPercent:32,duration:1.05,ease:'power2.inOut'},4.0)
-  .to(ci1,{opacity:0,duration:.5},4.3).to(ci2,{opacity:1,duration:.5},4.3)
-  .to(cp1,{opacity:0,y:-28,duration:.4},4.0).fromTo(cp2,{opacity:0,y:28},{opacity:1,y:0,duration:.55},4.6)
-  .to(MEDIA,{scale:1,rotationY:0,rotationZ:0,yPercent:0,duration:.65,ease:'power3.out'},4.85)
-  // 4 · Adults — settle
-  .to(MEDIA,{yPercent:7,scale:1.03,duration:.7,ease:'sine.inOut'},5.5);
+  // 1 · INFANTS — turns face-on & grows big (like the wheel rotating into view)
+  .to(MEDIA,{rotationY:-6, yPercent:0, scale:1.12, rotationZ:0, duration:1.1, ease:'power3.out'},0)
+  .to(MEDIA,{rotationY:10, scale:1.20, duration:1.0, ease:'sine.inOut'},1.1)          // keeps turning — alive
+  // 2 · INFANTS → KIDS — turns to a thin edge, morphs there, travels down & across, turns back
+  .to(MEDIA,{rotationY:78, scale:.82, yPercent:22, duration:.9, ease:'power2.in'},2.1) // turn to a thin visible sliver
+  .to(MEDIA,{xPercent:52, duration:1.6, ease:'power1.inOut'},2.1)                       // travel to other side
+  .to(ci0,{opacity:0,duration:.3},2.78).to(ci1,{opacity:1,duration:.3},2.84)           // swap hidden at the edge
+  .to(cp0,{opacity:0,y:-26,duration:.4},2.1).fromTo(cp1,{opacity:0,y:30},{opacity:1,y:0,duration:.55},3.0)
+  .to(MEDIA,{rotationY:-6, scale:1.12, yPercent:0, rotationZ:0, duration:1.05, ease:'power3.out'},3.0) // turn back — KIDS revealed
+  .to(MEDIA,{rotationY:-10, scale:1.20, duration:1.0, ease:'sine.inOut'},4.05)
+  // 3 · KIDS → ADULTS — turns to edge the other way, morphs, travels, turns back
+  .to(MEDIA,{rotationY:-78, scale:.82, yPercent:22, duration:.9, ease:'power2.in'},5.05)
+  .to(MEDIA,{xPercent:-52, duration:1.6, ease:'power1.inOut'},5.05)
+  .to(ci1,{opacity:0,duration:.3},5.73).to(ci2,{opacity:1,duration:.3},5.79)
+  .to(cp1,{opacity:0,y:-26,duration:.4},5.05).fromTo(cp2,{opacity:0,y:30},{opacity:1,y:0,duration:.55},5.95)
+  .to(MEDIA,{rotationY:-4, scale:1.10, yPercent:0, rotationZ:0, duration:1.05, ease:'power3.out'},5.95) // ADULTS revealed
+  // 4 · ADULTS — settle with a slow living turn
+  .to(MEDIA,{rotationY:4, scale:1.14, duration:1.0, ease:'sine.inOut'},7.0);
 
   /* ---------- generic reveals ---------- */
   gsap.utils.toArray('.line .in').forEach(function(el){
