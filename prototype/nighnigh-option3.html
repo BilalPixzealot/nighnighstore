@@ -276,6 +276,8 @@
 <a class="switch" href="index.html" data-c>← Compare options</a>
 
 <script src="assets/js/three.min.js"></script>
+<script src="assets/js/GLTFLoader.js"></script>
+<script src="assets/js/RoomEnvironment.js"></script>
 <script src="assets/js/gsap.min.js"></script>
 <script src="assets/js/ScrollTrigger.min.js"></script>
 <script src="assets/js/lenis.min.js"></script>
@@ -339,86 +341,59 @@
     morph.classList.add('enhanced');
     cp.forEach(function(e){ e.style.opacity=0; }); cp[0].style.opacity=1; railItems[0].classList.add('on');
 
-    var VERT = [
-      'uniform sampler2D uTexA; uniform float uAspA,uPlaneAsp,uDepth;',
-      'varying vec2 vUv; varying float vSh;',
-      'vec2 cover(vec2 uv,float ia,float pa){ vec2 s = ia>pa?vec2(pa/ia,1.0):vec2(1.0,ia/pa); return (uv-0.5)*s+0.5; }',
-      'void main(){ vUv=uv; vec2 c=cover(uv,uAspA,uPlaneAsp);',
-      ' float l=dot(texture2D(uTexA,c).rgb,vec3(0.299,0.587,0.114));',
-      ' float d=(l-0.5)*uDepth; vec3 p=position; p.z+=d; vSh=0.86+d*1.6;',
-      ' gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0); }'
-    ].join('\n');
-
-    var FRAG = [
-      'precision highp float;',
-      'uniform sampler2D uTexA,uTexB; uniform float uAspA,uAspB,uPlaneAsp,uProg,uTime;',
-      'varying vec2 vUv; varying float vSh;',
-      'vec2 cover(vec2 uv,float ia,float pa){ vec2 s = ia>pa?vec2(pa/ia,1.0):vec2(1.0,ia/pa); return (uv-0.5)*s+0.5; }',
-      'float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }',
-      'float vn(vec2 p){ vec2 i=floor(p),f=fract(p); float a=hash(i),b=hash(i+vec2(1,0)),c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));',
-      ' vec2 u=f*f*(3.0-2.0*f); return mix(mix(a,b,u.x),mix(c,d,u.x),u.y); }',
-      'void main(){',
-      ' float w=1.0-abs(uProg*2.0-1.0);',
-      ' float n=vn(vUv*5.0+uTime*0.04);',
-      ' vec2 ua=cover(vUv,uAspA,uPlaneAsp)+vec2(0.0,1.0)*w*0.012*n;',
-      ' vec2 ub=cover(vUv,uAspB,uPlaneAsp)-vec2(0.0,1.0)*w*0.012*n;',
-      ' vec3 ca=texture2D(uTexA,ua).rgb, cb=texture2D(uTexB,ub).rgb;',
-      ' float m=smoothstep(n-0.2,n+0.2,uProg);',
-      ' vec3 col=mix(ca,cb,m)*vSh;',
-      ' float vig=smoothstep(1.2,0.35,length(vUv-0.5)); col*=mix(0.80,1.0,vig);',
-      ' gl_FragColor=vec4(col,1.0); }'
-    ].join('\n');
-
     var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
     renderer.outputEncoding=THREE.sRGBEncoding;
+    renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
     var scene=new THREE.Scene();
-    var camera=new THREE.PerspectiveCamera(38,1,0.1,100); camera.position.z=4.2;
-    var loader=new THREE.TextureLoader();
-    var texes=urls.map(function(u){ var t=loader.load(u); t.encoding=THREE.sRGBEncoding; t.minFilter=THREE.LinearFilter; t.generateMipmaps=false; return t; });
-    var asp=[0.75,0.75,0.75];
-    urls.forEach(function(u,i){ var im=new Image(); im.onload=function(){ asp[i]=im.width/im.height; }; im.src=u; });
+    var camera=new THREE.PerspectiveCamera(35,1,0.1,100); camera.position.set(0,0,5.2);
+    var pmrem=new THREE.PMREMGenerator(renderer);
+    scene.environment=pmrem.fromScene(new THREE.RoomEnvironment(),0.04).texture;
+    var key=new THREE.DirectionalLight(0xffffff,1.15); key.position.set(2.5,3,4); scene.add(key);
+    var fill=new THREE.DirectionalLight(0xffffff,0.35); fill.position.set(-3,1,-2); scene.add(fill);
 
-    var PW=2.0,PH=2.7, PA=PW/PH;
-    var geo=new THREE.PlaneGeometry(PW,PH,72,96);
-    var U={ uTexA:{value:texes[0]},uTexB:{value:texes[1]},uAspA:{value:0.75},uAspB:{value:0.75},
-      uPlaneAsp:{value:PA},uProg:{value:0},uDepth:{value:0.09},uTime:{value:0} };
-    var mat=new THREE.ShaderMaterial({uniforms:U,vertexShader:VERT,fragmentShader:FRAG,transparent:true});
-    var mesh=new THREE.Mesh(geo,mat); scene.add(mesh);
+    var pivot=new THREE.Group(); scene.add(pivot);
+    var model=null, curVar=-1;
+    new THREE.GLTFLoader().load('assets/models/shoe.glb', function(gltf){
+      model=gltf.scene;
+      var box=new THREE.Box3().setFromObject(model), sz=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
+      model.position.sub(ctr);
+      model.scale.setScalar(2.7/Math.max(sz.x,sz.y,sz.z));
+      pivot.add(model);
+      var parser=gltf.parser, pend=[];
+      model.traverse(function(o){ if(o.isMesh){ o.userData.origMat=o.material; o.userData.vmats={};
+        var md=o.userData.gltfExtensions && o.userData.gltfExtensions['KHR_materials_variants'];
+        if(md){ md.mappings.forEach(function(mp){ mp.variants.forEach(function(vi){
+          pend.push(parser.getDependency('material',mp.material).then(function(m){ o.userData.vmats[vi]=m; })); }); }); }
+      }});
+      Promise.all(pend).then(function(){ ScrollTrigger.refresh(); });
+    }, undefined, function(e){ console.error('glb error',e); });
+
+    function setVariant(vi){ if(!model) return; model.traverse(function(o){ if(o.isMesh&&o.userData.vmats){ o.material=o.userData.vmats[vi]||o.userData.origMat; } }); }
 
     var cw=0,ch=0;
-    function resize(){ var w=canvas.clientWidth||canvas.offsetWidth, h=canvas.clientHeight||canvas.offsetHeight;
-      if(w===cw&&h===ch) return; cw=w; ch=h; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+    function resize(){ var w=canvas.clientWidth||canvas.offsetWidth,h=canvas.clientHeight||canvas.offsetHeight;
+      if(!w||!h||(w===cw&&h===ch))return; cw=w;ch=h; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 
-    // scroll progress
     var prog=0;
     ScrollTrigger.create({ trigger:'#morph', start:'top top', end:'bottom bottom', scrub:true,
       pin:'#stage', anticipatePin:1, invalidateOnRefresh:true, onUpdate:function(self){ prog=self.progress; } });
 
     var t1s=0.24,t1e=0.44,t2s=0.60,t2e=0.80;
     function apply(p){
-      var seg1 = p<t1e;
-      U.uTexA.value = seg1?texes[0]:texes[1];
-      U.uTexB.value = seg1?texes[1]:texes[2];
-      U.uAspA.value = seg1?asp[0]:asp[1];
-      U.uAspB.value = seg1?asp[1]:asp[2];
-      U.uProg.value = seg1?ss(t1s,t1e,p):ss(t2s,t2e,p);
+      pivot.rotation.y = p*Math.PI*3.0 + 0.5;                 // continuous full spin on scroll
+      pivot.rotation.x = -0.10 + Math.sin(p*Math.PI)*0.05;
       var b1=bump(p,t1s,t1e), b2=bump(p,t2s,t2e);
-      mesh.rotation.y = Math.sin(p*Math.PI*2.0)*0.05 + b1*1.15 - b2*1.15;   // real 3D turn, edge-on at morphs
-      mesh.rotation.x = Math.sin(p*Math.PI*3.0)*0.02;
-      var scale = 1.08 - (b1+b2)*0.26;                                      // big ↔ small
-      mesh.scale.setScalar(scale);
-      var side = seg1 ? (-1 + 2*ss(t1s,t1e,p)) : (1 - 2*ss(t2s,t2e,p));      // alternate sides
-      mesh.position.x = side*1.15;
-      mesh.position.y = -(b1+b2)*0.26;
+      pivot.scale.setScalar(1.0-(b1+b2)*0.10);
+      var side = p<t1e ? (-1+2*ss(t1s,t1e,p)) : (1-2*ss(t2s,t2e,p));
+      pivot.position.x = side*1.2;
+      pivot.position.y = -(b1+b2)*0.12;
+      var vi = p<0.34?0:(p<0.68?1:2); if(vi!==curVar){ curVar=vi; setVariant(vi); }
       setRail(p<0.38?0:(p<0.72?1:2));
-      // copies swap near the ends of each morph window so the mid-turn stays clean (no overlap)
-      var o0=1-ss(t1s,t1s+0.08,p);
-      var o1=ss(t1e-0.08,t1e,p)*(1-ss(t2s,t2s+0.08,p));
-      var o2=ss(t2e-0.08,t2e,p);
+      var o0=1-ss(t1s,t1s+0.08,p), o1=ss(t1e-0.08,t1e,p)*(1-ss(t2s,t2s+0.08,p)), o2=ss(t2e-0.08,t2e,p);
       cp[0].style.opacity=o0; cp[1].style.opacity=o1; cp[2].style.opacity=o2;
     }
-    function frame(t){ U.uTime.value=t*0.001; resize(); apply(prog); renderer.render(scene,camera); requestAnimationFrame(frame); }
+    function frame(){ resize(); apply(prog); renderer.render(scene,camera); requestAnimationFrame(frame); }
     requestAnimationFrame(frame);
     window.addEventListener('resize',resize);
   }
