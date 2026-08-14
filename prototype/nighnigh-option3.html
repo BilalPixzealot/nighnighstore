@@ -353,23 +353,21 @@
     var fill=new THREE.DirectionalLight(0xffffff,0.35); fill.position.set(-3,1,-2); scene.add(fill);
 
     var pivot=new THREE.Group(); scene.add(pivot);
-    var model=null, curVar=-1;
-    new THREE.GLTFLoader().load('assets/models/shoe.glb', function(gltf){
+    var model=null, curVar=-1, gMats=[];
+    var TINTS=[0xD69A93, 0x9FBCC2, 0xE6D6B8]; // infants rose · kids dusty-blue · adults warm ivory
+    new THREE.GLTFLoader().load('assets/models/garment.glb', function(gltf){
       model=gltf.scene;
       var box=new THREE.Box3().setFromObject(model), sz=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
       model.position.sub(ctr);
-      model.scale.setScalar(2.7/Math.max(sz.x,sz.y,sz.z));
+      model.scale.setScalar(2.05/Math.max(sz.x,sz.y,sz.z));
       pivot.add(model);
-      var parser=gltf.parser, pend=[];
-      model.traverse(function(o){ if(o.isMesh){ o.userData.origMat=o.material; o.userData.vmats={};
-        var md=o.userData.gltfExtensions && o.userData.gltfExtensions['KHR_materials_variants'];
-        if(md){ md.mappings.forEach(function(mp){ mp.variants.forEach(function(vi){
-          pend.push(parser.getDependency('material',mp.material).then(function(m){ o.userData.vmats[vi]=m; })); }); }); }
-      }});
-      Promise.all(pend).then(function(){ ScrollTrigger.refresh(); });
+      model.traverse(function(o){ if(o.isMesh && o.material){ o.material=o.material.clone();
+        if('roughness' in o.material) o.material.roughness=0.9; if('metalness' in o.material) o.material.metalness=0.0;
+        gMats.push(o.material); } });
+      setVariant(0); ScrollTrigger.refresh();
     }, undefined, function(e){ console.error('glb error',e); });
 
-    function setVariant(vi){ if(!model) return; model.traverse(function(o){ if(o.isMesh&&o.userData.vmats){ o.material=o.userData.vmats[vi]||o.userData.origMat; } }); }
+    function setVariant(vi){ var c=new THREE.Color(TINTS[vi]||0xffffff); gMats.forEach(function(m){ m.color.copy(c); }); }
 
     var cw=0,ch=0;
     function resize(){ var w=canvas.clientWidth||canvas.offsetWidth,h=canvas.clientHeight||canvas.offsetHeight;
@@ -387,7 +385,7 @@
       pivot.scale.setScalar(1.0-(b1+b2)*0.10);
       var side = p<t1e ? (-1+2*ss(t1s,t1e,p)) : (1-2*ss(t2s,t2e,p));
       pivot.position.x = side*1.2;
-      pivot.position.y = -(b1+b2)*0.12;
+      pivot.position.y = 0;   // stay vertically centered with the copy
       var vi = p<0.34?0:(p<0.68?1:2); if(vi!==curVar){ curVar=vi; setVariant(vi); }
       setRail(p<0.38?0:(p<0.72?1:2));
       var o0=1-ss(t1s,t1s+0.08,p), o1=ss(t1e-0.08,t1e,p)*(1-ss(t2s,t2s+0.08,p)), o2=ss(t2e-0.08,t2e,p);
